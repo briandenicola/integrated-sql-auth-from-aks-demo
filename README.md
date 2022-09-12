@@ -4,7 +4,7 @@ _TBD_
 
 # Setup
 ## Existing Infrastructure 
-1. A Windows Domain -
+1. A Windows Domain
 1. A SQL Server on Windows 
 1. A Domain Account for SQL Server
 1. A Domain Account for the application 
