@@ -1,6 +1,6 @@
 apiVersion: v2
-name: "template"
-description: A placeholder Helm chart for a Kubernetes deployment
+name: KerberosSideCarDemo
+description: A demo to show to utilize the sidecar pattern with Kerberos to refresh tickets 
 type: application
-version: 1.0.0
+version: 0.0.1
 appVersion: "1.0.0"

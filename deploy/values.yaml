@@ -1,8 +1,9 @@
-NAME: "default"
-ACR_NAME: ""
-APP_NAME: ""
-
-SERVICES:
-  TYPE: LoadBalancer
-  ANNOTATIONS:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+COMMIT_VERSION: '3.0'
+ACR_NAME: 'bjdcsa.azurecr.io'
+NAMESPACE: 'kerberosdemo'
+MSI_SELECTOR: 'sqltest-pod-identity'
+APP_SPN: 'HTTP/spn_svc_app01'
+APP_KEYTAB: '/etc/svc_app01.keytab'
+TENANT_ID: ''
+CONNECTION_STRING: 'Server=tcp:sql01.bjdazure.local,1433;Initial Catalog=Tododb;Integrated Security=True;TrustServerCertificate=True'
+KEYVAULT_NAME: ''
