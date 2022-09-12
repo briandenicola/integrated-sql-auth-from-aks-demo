@@ -28,23 +28,23 @@ _TBD_
 ## Steps
 ### Domain Controller
 ```cmd
-setspn -A MSSQLSvc/sql01.bjdazure.local:1433 svc_db01
-setspn -A MSSQLSvc/sql01:1433 svc_db01
-setspn -U -s HTTP/spn_svc_app01 svc_app01
-ktpass -out svc_app01.keytab -mapUser svc_app01@BJDAZURE.LOCAL -pass ${PASSWORD} -ptype KRB5_NT_PRINCIPAL -princ HTTP/spn_svc_app01@BJDAZURE.LOCAL
+    setspn -A MSSQLSvc/sql01.bjdazure.local:1433 svc_db01
+    setspn -A MSSQLSvc/sql01:1433 svc_db01
+    setspn -U -s HTTP/spn_svc_app01 svc_app01
+    ktpass -out svc_app01.keytab -mapUser svc_app01@BJDAZURE.LOCAL -pass ${PASSWORD} -ptype KRB5_NT_PRINCIPAL -princ HTTP/spn_svc_app01@BJDAZURE.LOCAL
 ```
 
 ### AKS
 ```bash
-RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group SQL_RG --query id -o tsv`
-az aks pod-identity add --resource-group ${CLUSTER_RG} --cluster-name ${CLUSTER_NAME} --namespace kerberosdemo --name sqltest-pod-identity --identity-resource-id ${RESOURCEID}
+    RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group SQL_RG --query id -o tsv`
+    az aks pod-identity add --resource-group ${CLUSTER_RG} --cluster-name ${CLUSTER_NAME} --namespace kerberosdemo --name sqltest-pod-identity --identity-resource-id ${RESOURCEID}
 ```
 
 ### Key Vault
 ```bash
-az keyvault secret set --name keytab --vault-name ${KEYVAULT} --file ./svc_app01.keytab --encoding base64
-KEYVAULT_ID=`az keyvault show --name ${KEYVAULT} --resource-group SQL_RG --query id -o tsv`
-az role assignment create --assignee sqltest-pod-identity --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
+    az keyvault secret set --name keytab --vault-name ${KEYVAULT} --file ./svc_app01.keytab --encoding base64
+    KEYVAULT_ID=`az keyvault show --name ${KEYVAULT} --resource-group SQL_RG --query id -o tsv`
+    az role assignment create --assignee sqltest-pod-identity --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
 ```
 
 ### Build
