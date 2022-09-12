@@ -1,0 +1,6 @@
+FROM ubuntu:20.04
+WORKDIR  /app
+RUN apt update && apt install -y krb5-config krb5-user
+COPY krb5/krb5.conf /etc/krb5.conf
+COPY scripts/kinit.sh /app
+ENTRYPOINT ["bash", "/app/kinit.sh"]
