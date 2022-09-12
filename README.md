@@ -27,21 +27,27 @@ _TBD_
 
 ## Steps
 ### Domain Controller
-1. setspn -A MSSQLSvc/sql01.bjdazure.local:1433 svc_db01
-1. setspn -A MSSQLSvc/sql01:1433 svc_db01
-1. setspn -U -s HTTP/spn_svc_app01 svc_app01
-1. ktpass -out svc_app01.keytab -mapUser svc_app01@BJDAZURE.LOCAL -pass ${PASSWORD} -ptype KRB5_NT_PRINCIPAL -princ HTTP/spn_svc_app01@BJDAZURE.LOCAL
+```cmd
+setspn -A MSSQLSvc/sql01.bjdazure.local:1433 svc_db01
+setspn -A MSSQLSvc/sql01:1433 svc_db01
+setspn -U -s HTTP/spn_svc_app01 svc_app01
+ktpass -out svc_app01.keytab -mapUser svc_app01@BJDAZURE.LOCAL -pass ${PASSWORD} -ptype KRB5_NT_PRINCIPAL -princ HTTP/spn_svc_app01@BJDAZURE.LOCAL
+```
 
 ### AKS
-1. RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group SQL_RG --query id -o tsv`
-1. az aks pod-identity add --resource-group ${CLUSTER_RG} --cluster-name ${CLUSTER_NAME} --namespace kerberosdemo --name sqltest-pod-identity --identity-resource-id ${RESOURCEID}%
+```bash
+RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group SQL_RG --query id -o tsv`
+az aks pod-identity add --resource-group ${CLUSTER_RG} --cluster-name ${CLUSTER_NAME} --namespace kerberosdemo --name sqltest-pod-identity --identity-resource-id ${RESOURCEID}%
+```
 
 ### Key Vault
-1. az keyvault secret set --name keytab --vault-name ${KEYVAULT} --file ./svc_app01.keytab --encoding base64
-1. Assign sqltest-pod-identity the role 'Key Vault Secrets User' to ${KEYVAULT}
+```bash
+az keyvault secret set --name keytab --vault-name ${KEYVAULT} --file ./svc_app01.keytab --encoding base64
+az role assignment create --assignee sqltest-pod-identity --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
+```
 
 ### Build
-```
+```bash
     docker build -t ${ACR}.azurecr.io/sql/demoapp:3.0 -f Dockerfile.app .
     docker build -t ${ACR}.azurecr.io/sql/demoapp-sidecar:3.0 -f Dockerfile.sidecar .
     az acr login -n ${ACR}
@@ -50,7 +56,7 @@ _TBD_
 ```
 
 # Validate
-```
+```bash
     #Update values in deploy\values.yaml
     cd deploy
     helm upgrade -i kerberosdemo -n kerberosdemo --create-namespace . 
@@ -59,7 +65,7 @@ _TBD_
 ```
 
 ### Results
-```
+```bash
     Query data example:
     =========================================
 
