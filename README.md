@@ -37,12 +37,13 @@ ktpass -out svc_app01.keytab -mapUser svc_app01@BJDAZURE.LOCAL -pass ${PASSWORD}
 ### AKS
 ```bash
 RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group SQL_RG --query id -o tsv`
-az aks pod-identity add --resource-group ${CLUSTER_RG} --cluster-name ${CLUSTER_NAME} --namespace kerberosdemo --name sqltest-pod-identity --identity-resource-id ${RESOURCEID}%
+az aks pod-identity add --resource-group ${CLUSTER_RG} --cluster-name ${CLUSTER_NAME} --namespace kerberosdemo --name sqltest-pod-identity --identity-resource-id ${RESOURCEID}
 ```
 
 ### Key Vault
 ```bash
 az keyvault secret set --name keytab --vault-name ${KEYVAULT} --file ./svc_app01.keytab --encoding base64
+KEYVAULT_ID=`az keyvault show --name ${KEYVAULT} --resource-group SQL_RG --query id -o tsv`
 az role assignment create --assignee sqltest-pod-identity --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
 ```
 
