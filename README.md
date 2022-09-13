@@ -49,6 +49,8 @@ Kubernetes Namespace | kerberosdemo
     CREATE LOGIN [BJDAZURE\svc_app01] FROM WINDOWS WITH DEFAULT_DATABASE=[tododb];
     ALTER ROLE db_datareader ADD MEMBER [BJDAZURE\svc_app01];
     ALTER ROLE db_datawriter ADD MEMBER [BJDAZURE\svc_app01];
+    INSERT INTO dbo.Todos VALUES (1, 'take out trash', 0);
+    INSERT INTO dbo.Todos VALUES (2, 'clean room', 0);
 ```
 
 ### AKS
