@@ -40,9 +40,18 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
          -ptype KRB5_NT_PRINCIPAL -princ HTTP/spn_svc_app01@BJDAZURE.LOCAL
 ```
 
+### SQL Server 
+```SQL
+    CREATE DATABASE [tododb];
+    CREATE TABLE dbo.Todos ( [Id] INT PRIMARY KEY, [Name] VARCHAR(250) NOT NULL, [IsComplete] BIT);
+    CREATE LOGIN [BJDAZURE\svc_app01] FROM WINDOWS WITH DEFAULT_DATABASE=[tododb];
+    ALTER ROLE db_datareader ADD MEMBER [BJDAZURE\svc_app01];
+    ALTER ROLE db_datawriter ADD MEMBER [BJDAZURE\svc_app01];
+```
+
 ### AKS
 ```bash
-    RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group SQL_RG --query id -o tsv`
+    RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group ${RG} --query id -o tsv`
     az aks pod-identity add \
         --resource-group ${CLUSTER_RG} \
         --cluster-name ${CLUSTER_NAME} \
@@ -57,7 +66,7 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
         --vault-name ${KEYVAULT} \
         --file svc_app01.keytab \
         --encoding base64
-    KEYVAULT_ID=`az keyvault show --name ${KEYVAULT} --resource-group SQL_RG --query id -o tsv`
+    KEYVAULT_ID=`az keyvault show --name ${KEYVAULT} --resource-group ${RG} --query id -o tsv`
     az role assignment create --assignee sqltest-pod-identity \
         --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
 ```
@@ -74,6 +83,15 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
 # Validate
 ```bash
     #Update values in deploy\values.yaml
+        #COMMIT_VERSION: '3.0'
+        #ACR_NAME: '${ACR}.azurecr.io'
+        #NAMESPACE: 'kerberosdemo'
+        #MSI_SELECTOR: 'sqltest-pod-identity'
+        #APP_SPN: 'HTTP/spn_svc_app01'
+        #APP_KEYTAB: '/etc/keytabs/svc-app01-keytab'
+        #TENANT_ID: '${AAD_TENANT_ID}'
+        #CONNECTION_STRING: 'Server=tcp:sql01.bjdazure.local,1433;Initial Catalog=Tododb;Integrated Security=True;TrustServerCertificate=True'
+        #KEYVAULT_NAME: '${KEYVAULT}'
     cd deploy
     helm upgrade -i kerberosdemo -n kerberosdemo --create-namespace . 
     pod=`kubectl -n kerberosdemo get pods -o name --no-headers=true`
