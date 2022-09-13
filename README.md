@@ -11,7 +11,7 @@ All containers use /tmp as a shared volume. The Kerberos cache ticket is written
 
 `export KRB5_TRACE=/dev/stdout kinit` can be used to display detailed debug traces to help troubleshoot any possible issues.  
 
-This demo also utilizes Azure Key Vault and an Azure Managed Identity to store the encrypted [keytab](https://web.mit.edu/kerberos/krb5-1.12/doc/basic/keytab_def.html) file. The [Azure Key Vault CSI driver](https://docs.microsoft.com/en-us/azure/aks/csi-secrets-store-driver) is used to securely mount the keytab file in the sidecar at /etc/keytabs/svc-app01-keytab. _This is optional_
+This demo also utilizes Azure Key Vault and an Azure Managed Identity to store the encrypted [keytab](https://web.mit.edu/kerberos/krb5-1.12/doc/basic/keytab_def.html) file. This is useful so that the keytab is not stored as part of the container. The [Azure Key Vault CSI driver](https://docs.microsoft.com/en-us/azure/aks/csi-secrets-store-driver) is used to securely mount the keytab file in the sidecar at /etc/keytabs/svc-app01-keytab. _This is optional_
 
 # Setup
 ## Existing Infrastructure 
