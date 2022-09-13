@@ -21,16 +21,18 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
 1. A User Assigned Managed Identity
 1. Docker
 
-## Example Configuration
-* DOMAIN: bjdazure.local
-* Domain Controller: dc01.bjdazure.local
-* SQL Server VM: sql01.bjdazure.local
-* SQL Server Account: svc_db01
-* Application Service Account: svc_app01
-* User Assigned Managed Identity: sqltest-pod-identity
-* Namespace: kerberosdemo
+## Example Values
+Component | Value
+------ | ------
+Domain Name | bjdazure.local
+Domain Controller | dc01.bjdazure.local
+SQL Server VM | sql01.bjdazure.local
+SQL Server Account | svc_db01
+Application Service Account | svc_app01
+User Assigned Managed Identity | sqltest-pod-identity
+Kubernetes Namespace | kerberosdemo
 
-## Steps
+## Manual Configurations
 ### Domain Controller
 ```powershell
     setspn -A MSSQLSvc/sql01.bjdazure.local:1433 svc_db01
@@ -71,7 +73,7 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
         --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
 ```
 
-### Build
+## Build
 ```bash
     docker build -t ${ACR}.azurecr.io/sql/demoapp:3.0 -f Dockerfile.app .
     docker build -t ${ACR}.azurecr.io/sql/demoapp-sidecar:3.0 -f Dockerfile.sidecar .
@@ -80,7 +82,7 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
     docker push ${ACR}.azurecr.io/sql/demoapp:3.0 
 ```
 
-# Validate
+## Deploy 
 ```bash
     #Update values in deploy\values.yaml
         #COMMIT_VERSION: '3.0'
@@ -94,11 +96,15 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
         #KEYVAULT_NAME: '${KEYVAULT}'
     cd deploy
     helm upgrade -i kerberosdemo -n kerberosdemo --create-namespace . 
+```
+
+## Validate
+```bash
     pod=`kubectl -n kerberosdemo get pods -o name --no-headers=true`
     kubectl -n kerberosdemo exec -it ${pod} -c demoapp -- dotnet /app/sql.dll
 ```
 
-### Results
+### Result
 ```bash
     Query data example:
     =========================================
