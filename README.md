@@ -24,6 +24,7 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
 ## Example Configuration
 * DOMAIN: bjdazure.local
 * Domain Controller: dc01.bjdazure.local
+* SQL Server VM: sql01.bjdazure.local
 * SQL Server Account: svc_db01
 * Application Service Account: svc_app01
 * User Assigned Managed Identity: sqltest-pod-identity
