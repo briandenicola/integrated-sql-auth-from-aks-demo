@@ -5,7 +5,11 @@ There are two containers in this demo
 1. demoapp - This container houses the SQL client application. Its an interactive console app at this time. 
 1. demoapp-sidecar - This container handles kerberos cache initilization as a Init Container and then handles cache refresh once an hour as a sidecar in the pod
 
-All containers use /tmp as a shared volume. The Kerberos cache ticket is written to /tmp/krb5cc_0
+The side car is required because Kerberos tickets have a lifespan and must be refreshed periodically.  Traditionally, this was handled by the Operating System that was joined to a LDAP domain (Active Directory for example).  Since neither nodes in AKS nor containers join any domain in the typical manner, Kerberos ticket generation and refresh has to be handled by the application.  A side car is just one method to than can use the ticket refresh by invoking `kinit -R` before the ticket cache has expired.  This [article](https://cloud.redhat.com/blog/kerberos-sidecar-container) goes into deeper depth on this pattern. 
+
+All containers use /tmp as a shared volume. The Kerberos cache ticket is written to /tmp/krb5cc_0, which is the default location. The application code does not require any special configuration to read the cache when it opens a connection to SQL Server. Modifiying [Enivronment Variables](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/env_variables.html) can be used to influence where the cache is stored.
+
+`export KRB5_TRACE=/dev/stdout kinit` can be used to display detailed debug traces to help troubleshoot any possible issues.  
 
 This demo also utilizes Azure Key Vault and an Azure Managed Identity to store the encrypted [keytab](https://web.mit.edu/kerberos/krb5-1.12/doc/basic/keytab_def.html) file. The [Azure Key Vault CSI driver](https://docs.microsoft.com/en-us/azure/aks/csi-secrets-store-driver) is used to securely mount the keytab file in the sidecar at /etc/keytabs/svc-app01-keytab. _This is optional_
 
