@@ -42,7 +42,7 @@ _TBD_
 
 ### Key Vault
 ```bash
-    az keyvault secret set --name keytab --vault-name ${KEYVAULT} --file ./svc_app01.keytab --encoding base64
+    az keyvault secret set --name svc-app01-keytab --vault-name ${KEYVAULT} --file ./svc_app01.keytab --encoding base64
     KEYVAULT_ID=`az keyvault show --name ${KEYVAULT} --resource-group SQL_RG --query id -o tsv`
     az role assignment create --assignee sqltest-pod-identity --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
 ```

@@ -25,7 +25,7 @@ spec:
         - name: POD_TYPE
           value: "INIT"
         volumeMounts:
-        - name: secrets-store01-inline
+        - name: secrets-store01
           mountPath: "/etc/keytabs"
           readOnly: true
         volumeMounts:
@@ -52,13 +52,13 @@ spec:
         - name: POD_TYPE
           value: "SIDECAR"       
         volumeMounts:
-        - name: secrets-store01-inline
+        - name: secrets-store01
           mountPath: "/etc/keytabs"
           readOnly: true
         - name: kinit-cache
           mountPath: /tmp
       volumes:
-        - name: secrets-store01-inline
+        - name: secrets-store01
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true

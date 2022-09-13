@@ -1,7 +1,6 @@
 #!/bin/bash 
 
 SLEEP_SECONDS=3600
-cat /etc/keytabs/keytab | base64 -d > ${APP_KEYTAB}
 
 echo "[$(date)] - Initialize kinit"
 kinit -kV ${APP_SPN} -t ${APP_KEYTAB}
