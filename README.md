@@ -31,24 +31,34 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
 
 ## Steps
 ### Domain Controller
-```cmd
+```powershell
     setspn -A MSSQLSvc/sql01.bjdazure.local:1433 svc_db01
     setspn -A MSSQLSvc/sql01:1433 svc_db01
     setspn -U -s HTTP/spn_svc_app01 svc_app01
-    ktpass -out svc_app01.keytab -mapUser svc_app01@BJDAZURE.LOCAL -pass ${PASSWORD} -ptype KRB5_NT_PRINCIPAL -princ HTTP/spn_svc_app01@BJDAZURE.LOCAL
+    ktpass -out svc_app01.keytab -mapUser svc_app01@BJDAZURE.LOCAL -pass ${PASSWORD}`
+         -ptype KRB5_NT_PRINCIPAL -princ HTTP/spn_svc_app01@BJDAZURE.LOCAL
 ```
 
 ### AKS
 ```bash
     RESOURCEID=`az identity show --name sqltest-pod-identity --resource-group SQL_RG --query id -o tsv`
-    az aks pod-identity add --resource-group ${CLUSTER_RG} --cluster-name ${CLUSTER_NAME} --namespace kerberosdemo --name sqltest-pod-identity --identity-resource-id ${RESOURCEID}
+    az aks pod-identity add \
+        --resource-group ${CLUSTER_RG} \
+        --cluster-name ${CLUSTER_NAME} \
+        --namespace kerberosdemo \
+        --name sqltest-pod-identity \
+        --identity-resource-id ${RESOURCEID}
 ```
 
 ### Key Vault
 ```bash
-    az keyvault secret set --name svc-app01-keytab --vault-name ${KEYVAULT} --file svc_app01.keytab --encoding base64
+    az keyvault secret set --name svc-app01-keytab \
+        --vault-name ${KEYVAULT} \
+        --file svc_app01.keytab \
+        --encoding base64
     KEYVAULT_ID=`az keyvault show --name ${KEYVAULT} --resource-group SQL_RG --query id -o tsv`
-    az role assignment create --assignee sqltest-pod-identity --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
+    az role assignment create --assignee sqltest-pod-identity \
+        --role 'Key Vault Secrets User' --scope ${KEYVAULT_ID}
 ```
 
 ### Build
@@ -65,7 +75,8 @@ This demo also utilizes Azure Key Vault and an Azure Managed Identity to store t
     #Update values in deploy\values.yaml
     cd deploy
     helm upgrade -i kerberosdemo -n kerberosdemo --create-namespace . 
-    kubectl -n kerberosdemo exec -it $(kubectl -n kerberosdemo get pods -o name --no-headers=true) -c demoapp -- dotnet /app/sql.dll
+    pod=`kubectl -n kerberosdemo get pods -o name --no-headers=true`
+    kubectl -n kerberosdemo exec -it ${pod} -c demoapp -- dotnet /app/sql.dll
 ```
 
 ### Results
