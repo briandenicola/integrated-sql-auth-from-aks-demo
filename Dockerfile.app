@@ -5,6 +5,7 @@ RUN dotnet restore
 RUN dotnet publish -c Release --nologo -o publish/linux
 
 FROM bjd145/utils:3.10
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y krb5-user aspnetcore-runtime-6.0
 COPY krb5/krb5.conf /etc/krb5.conf
 WORKDIR /app
